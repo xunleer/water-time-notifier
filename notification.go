@@ -16,7 +16,7 @@ func main() {
 
 	for {
 		<-timer1.C
-		err := run("notifcation.ps1")
+		err := run("notification.ps1")
 		if err != nil {
 			log.Fatalln(err)
 		}
