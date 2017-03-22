@@ -1,0 +1,53 @@
+#!/usr/bin/python
+
+__author__ = "xunleer"
+__email__ = "xunleer@gmail.com"
+__version__ = "0.1"
+
+import argparse
+import requests
+import json
+from subprocess import call
+import sys
+import os
+
+def postRequest(host, port, uri, data):
+	url='http://'+host+":"+port+uri
+	headers = {'Content-type': 'application/json',
+	           'Accept': 'application/json'}
+	resp = requests.post(url, data=json.dumps(data), headers=headers)
+	resp.raise_for_status()
+
+def getNotificationsData():
+	notifiers = '''{"notifications": [{
+		    "application": "Mission Control Notifier",
+		    "title": "Mission accomplished!",
+		    "message": ""}]}'''
+	return json.loads(notifiers)
+
+
+def main():
+	if (len(sys.argv) == 1):
+		print "Usage: ", sys.argv[0], "command [options]"
+		exit(1)
+
+	call(sys.argv[1:])
+
+	msg = 'Congratulations! Time consuming task ("'
+	msg += str(sys.argv[1])
+	msg +=  '") on server "'
+	msg += os.getenv('HOSTNAME')
+	msg += '" is done! You can continue your work now.'
+
+	data = getNotificationsData()
+	data['notifications'][0]['message'] = msg
+
+	server = os.getenv('SRVHOST', "127.0.0.1")
+	port = os.getenv('SRVPORT', "8080")
+	postRequest(server, port, '/notifications', data)
+
+if __name__ == "__main__":
+	try:
+		main()
+	except KeyboardInterrupt:
+		pass
