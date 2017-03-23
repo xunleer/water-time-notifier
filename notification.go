@@ -49,3 +49,28 @@ func (n notification) PushNotification() error {
 
 	return runCommand(file)
 }
+
+const MB_ICONINFORMATION = 0x00000040
+
+func (n notification) PopMessageBox() error {
+	var mod = syscall.NewLazyDLL("user32.dll")
+	var proc = mod.NewProc("MessageBoxW")
+
+	proc.Call(0,
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(n.Message))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(n.Title))),
+		uintptr(MB_ICONINFORMATION))
+
+	return nil
+}
+
+func (n notification) Notice() error {
+	var err error
+	if winVer := os.Getenv("WINVER"); winVer == "win10" {
+		err = n.PushNotification()
+	} else {
+		err = n.PopMessageBox()
+	}
+
+	return err
+}
