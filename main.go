@@ -31,7 +31,7 @@ func processNetNotification(w http.ResponseWriter, req *http.Request) {
 	}
 
 	for _, notifier := range notifiers.Notifications {
-		notifier.PushNotification()
+		notifier.Notice()
 	}
 }
 
@@ -74,7 +74,7 @@ func main() {
 
 		for {
 			<-timer.C
-			err := notifier.PushNotification()
+			err := notifier.Notice()
 			if err != nil {
 				log.Fatalln(err)
 			}
