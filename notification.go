@@ -10,6 +10,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"text/template"
+	
+	"syscall"
+	"unsafe"
 )
 
 type notification struct {
